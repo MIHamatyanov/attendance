@@ -1,35 +1,11 @@
 <template>
     <div class="main_container">
-        <v-app-bar
-            fixed
-            color="#003b73"
-            elevate-on-scroll
-            height="100px"
-        >
-            <v-row no-gutters class="px-12">
-                <LogoIcon/>
-                <div class="header_link_wrapper mt-3">
-                    <a v-for="i in user.group.course" class="mr-5 header_link" :key="i" @click="loadSubjects(i)">{{i}} курс</a>
-                </div>
-                <v-spacer></v-spacer>
-                <router-link :to="{name: 'Profile'}">
-                    <v-avatar
-                        size="45"
-                    >
-                        <AvatarIconWhite/>
-                    </v-avatar>
-                </router-link>
-                <a href="/logout" class="ml-5 mt-3 logout_btn">
-                    Выход
-                </a>
-            </v-row>
-        </v-app-bar>
         <v-row no-gutters style="margin-top: 100px;">
             <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="1" md="3" lg="2">
                 <NavigationMenu/>
             </v-col>
-            <v-col cols="10" class="pl-12">
-                <v-row no-gutters class="mt-9">
+            <v-col cols="10" class="pl-12 mt-9">
+                <v-row no-gutters>
                     <v-col cols="2">
                         <a>
                             <v-img
@@ -141,21 +117,20 @@
 </template>
 
 <script>
-import LogoIcon from "../components/icons/LogoIcon";
 import NavigationMenu from "../components/NavigationMenu";
-import AvatarIconWhite from "../components/icons/AvatarIconWhite";
 
 export default {
     name: "Profile",
-    components: {AvatarIconWhite, NavigationMenu, LogoIcon},
+    components: {NavigationMenu},
     data() {
         return {
-            user: {},
+            user: {
+                group: {}
+            },
             photoSrc: '',
             oldPassword: '',
             newPassword: '',
-            repeatPassword: '',
-            subjects: []
+            repeatPassword: ''
         }
     },
 
@@ -166,7 +141,6 @@ export default {
     },
 
     async created() {
-        await this.$store.dispatch('loadCurrentUserData');
         this.user = Object.assign({}, this.$store.getters.currentUser);
         if (this.user.photoUrl) {
             let photoResponse = await this.$store.dispatch("getByteArray", this.user.photoUrl);
@@ -177,11 +151,6 @@ export default {
     },
 
     methods: {
-        async loadSubjects(course) {
-            this.$route.params.course = course;
-            this.$router.replace({name: 'Profile', query: {course: course}}).catch(() => {});
-        },
-
         async changePassword() {
             let data = {
                 oldPassword: this.oldPassword,
@@ -231,16 +200,6 @@ export default {
 </script>
 
 <style scoped>
-.logout_btn {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.search_field {
-    color: #fff !important;
-}
-
 .profile_photo {
     border: 1px solid #a5a3a3;
 }
@@ -267,13 +226,4 @@ export default {
     color: white;
 }
 
-.header_link {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.header_link_wrapper {
-    margin-left: 135px;
-}
 </style>

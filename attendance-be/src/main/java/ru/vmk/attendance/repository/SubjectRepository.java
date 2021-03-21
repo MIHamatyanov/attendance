@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findAllByCourseAndGroupOrderByCourseAscSemesterAsc(int course, Group group);
+
+    Subject getById(Long subjectId);
 }

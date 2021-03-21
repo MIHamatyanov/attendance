@@ -11,6 +11,8 @@ import ru.vmk.attendance.exception.PasswordNotMatchException;
 import ru.vmk.attendance.model.User;
 import ru.vmk.attendance.repository.UserRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -42,5 +44,9 @@ public class UserService {
         authUser = userRepository.save(authUser);
 
         return authUser;
+    }
+
+    public List<User> getGroupList(Long id) {
+        return userRepository.getAllByGroupId(id);
     }
 }

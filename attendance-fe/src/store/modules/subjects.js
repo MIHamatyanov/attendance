@@ -22,6 +22,22 @@ export default {
                 };
             }
         },
+
+        async getSubjectVisitList(context, id) {
+            try {
+                let visitList = await rest.doGet(`${path}/${id}/visit-list`);
+
+                return {
+                    success: true,
+                    data: visitList
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error.response.data
+                };
+            }
+        },
     },
 
     mutations: {},

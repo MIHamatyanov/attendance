@@ -7,6 +7,7 @@ import constants from './constants';
 import Login from './views/Login';
 import Profile from './views/Profile';
 import Logout from './views/Logout';
+import SubjectVisitList from "./views/SubjectVisitList";
 
 Vue.use(Router);
 
@@ -63,6 +64,16 @@ export default new Router({
             path: '/profile',
             name: 'Profile',
             component: Profile,
+            beforeEnter: (to, from, next) => {
+                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD])
+            }
+        },
+
+        {
+            path: '/subject-visit-list/:id',
+            name: 'SubjectVisitList',
+            props: true,
+            component: SubjectVisitList,
             beforeEnter: (to, from, next) => {
                 checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD])
             }

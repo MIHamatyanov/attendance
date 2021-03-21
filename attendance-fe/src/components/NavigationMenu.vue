@@ -1,5 +1,32 @@
 <template>
     <div class="main_left_pane">
+        <v-app-bar
+            fixed
+            color="#003b73"
+            height="100px"
+            elevation="0"
+        >
+            <v-row no-gutters class="px-12">
+                <LogoIcon/>
+                <div class="header_link_wrapper mt-3">
+                    <a v-for="(course, index) in courses" class="mr-5 header_link" :key="index" @click="loadSubjects(course)">
+                        <span :class="{'link_active': course.active}">{{ course.number }} курс</span>
+                    </a>
+                </div>
+                <v-spacer></v-spacer>
+                <router-link :to="{name: 'Profile', query: {course: $route.query.course}}">
+                    <v-avatar
+                        size="45"
+                    >
+                        <AvatarIconWhite/>
+                    </v-avatar>
+                </router-link>
+                <a href="/logout" class="ml-5 mt-3 logout_btn">
+                    Выход
+                </a>
+            </v-row>
+        </v-app-bar>
+
         <v-navigation-drawer
             v-model="drawer"
             :absolute="$vuetify.breakpoint.smAndDown"
@@ -14,15 +41,16 @@
                 <span class="subject_link">1 семестр</span>
                 <ul>
                     <li class="subject_link mt-2" v-for="(subject, index) in subjects.firstSemester" :key="index">
-                        <a class="subject_link">{{subject.name}}</a>
+                        <router-link :to="{name: 'SubjectVisitList', params: {id: subject.id}, query: {course: $route.query.course}}" class="subject_link">{{ subject.name }}</router-link>
                     </li>
                 </ul>
             </div>
-            <div v-if="subjects.secondSemester && subjects.secondSemester.length !== 0" class="ml-5" :class="subjects.firstSemester && subjects.firstSemester.length !== 0 ? 'mt-10' : ''">
+            <div v-if="subjects.secondSemester && subjects.secondSemester.length !== 0" class="ml-5"
+                 :class="subjects.firstSemester && subjects.firstSemester.length !== 0 ? 'mt-10' : ''">
                 <span class="subject_link">2 семестр</span>
                 <ul>
                     <li class="subject_link mt-2" v-for="(subject, index) in subjects.secondSemester" :key="index">
-                        <a class="subject_link">{{subject.name}}</a>
+                        <router-link :to="{name: 'SubjectVisitList', params: {id: subject.id}, query: {course: $route.query.course}}" class="subject_link">{{ subject.name }}</router-link>
                     </li>
                 </ul>
             </div>
@@ -36,29 +64,53 @@
 
 <script>
 
+import LogoIcon from "./icons/LogoIcon";
+import AvatarIconWhite from "./icons/AvatarIconWhite";
+
 export default {
     name: "NavigationMenu",
+    components: {AvatarIconWhite, LogoIcon},
     data() {
         return {
             drawer: false,
-            subjects: []
+            subjects: [],
+            courses: [],
+            user: {
+                group: {}
+            }
         }
     },
 
     watch: {
         '$route.query.course': function () {
-            this.loadSubjects(this.$route.query.course);
+            this.loadSubjects({number: this.$route.query.course});
         }
     },
 
-    created() {
+    async created() {
+        await this.$store.dispatch('loadCurrentUserData');
+        this.user = Object.assign({}, this.$store.getters.currentUser);
+        for (let i = 0; i < this.user.group.course; i++) {
+            this.courses.push({
+                number: i + 1,
+                active: false
+            })
+        }
         if (this.$route.query.course) {
-            this.loadSubjects(this.$route.query.course);
+            this.loadSubjects({number: this.$route.query.course});
         }
     },
     methods: {
         async loadSubjects(course) {
-            let response = await this.$store.dispatch('getSubjects', course);
+            this.$route.params.course = course.number;
+            this.$router.replace({name: this.$route.name, query: {course: course.number}}).catch(() => {});
+
+            for (let i = 0; i < this.courses.length; i++) {
+                this.courses[i].active = false;
+            }
+            this.courses[course.number - 1].active = true;
+
+            let response = await this.$store.dispatch('getSubjects', course.number);
             if (response.success) {
                 this.subjects = response.data;
             }
@@ -87,5 +139,26 @@ export default {
     color: white;
     text-decoration: none;
     font-weight: bold;
+}
+
+
+.header_link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.header_link_wrapper {
+    margin-left: 135px;
+}
+
+.logout_btn {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link_active {
+    opacity: 0.7;
 }
 </style>
