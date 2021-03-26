@@ -7,6 +7,7 @@
             <v-col cols="10" class="px-12 mt-9">
                 <v-row no-gutters>
                     <span class="page_title">{{ getSubjectTitle() }}</span>
+                    <span class="page_title ml-2">{{ getScheduleStr() }}</span>
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="12">
@@ -22,14 +23,14 @@
                                 </colgroup>
                                 <thead>
                                 <tr>
-                                    <th class="text-left">
+                                    <th class="text-center">
                                         <span class="table_header">Фамилия И.О.</span>
                                     </th>
-                                    <th class="text-left" v-for="(visitList, index) in userVisitList[0].visitList"
+                                    <th class="text-center" v-for="(visitList, index) in userVisitList[0].visitList"
                                         :key="index">
                                         <span class="table_header">{{ parseDate(visitList.date) }}</span>
                                     </th>
-                                    <th v-if="user.role !== 'ROLE_STUDENT'" class="text-left">
+                                    <th v-if="user.role !== 'ROLE_STUDENT'" class="text-center">
                                         <v-dialog
                                             ref="dialog"
                                             v-model="datepickerMenu"
@@ -70,13 +71,13 @@
                                             </v-date-picker>
                                         </v-dialog>
                                     </th>
-                                    <th class="text-left">
+                                    <th class="text-center">
                                         <span class="table_header">...</span>
                                     </th>
-                                    <th class="text-left">
+                                    <th class="text-center">
                                         <span class="table_header">Н</span>
                                     </th>
-                                    <th class="text-left">
+                                    <th class="text-center">
                                         <span class="table_header">Баллы</span>
                                     </th>
                                 </tr>
@@ -87,29 +88,29 @@
                                     :key="index"
                                     style="cursor: pointer"
                                 >
-                                    <td class="num" v-if="visitList.user">
+                                    <td v-if="visitList.user">
                                         {{
                                             visitList.user.surname + ' ' + visitList.user.name.substr(0, 1) + '. ' + visitList.user.patronymic.substr(0, 1) + '.'
                                         }}
                                     </td>
-                                    <td v-for="(visitList, index) in userVisitList[index].visitList" :key="index">
+                                    <td class="text-center" v-for="(visitList, index) in userVisitList[index].visitList" :key="index">
                                         <v-text-field
                                             v-if="user.role !== 'ROLE_STUDENT'"
                                             v-model="visitList.mark"
                                         ></v-text-field>
                                         <span v-else>{{ visitList.mark }}</span>
                                     </td>
-                                    <td v-if="user.role !== 'ROLE_STUDENT'">
+                                    <td class="text-center" v-if="user.role !== 'ROLE_STUDENT'">
                                         <v-text-field v-model="visitList.mark">
                                         </v-text-field>
                                     </td>
                                     <td>
                                         {{ '' }}
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         {{ visitList.notVisitCount }}
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         {{ visitList.marksSum }}
                                     </td>
                                 </tr>
@@ -172,6 +173,45 @@ export default {
             }
 
             return '';
+        },
+
+        getScheduleStr() {
+            let schedule = this.subject.schedule;
+            let scheduleStr = '';
+            for (let i = 0; i < schedule.length; i++) {
+                scheduleStr += this.getWeekDayName(schedule[i].weekDay) + ' ';
+
+                if (schedule[i].evenWeek !== null) {
+                    scheduleStr += schedule[i].evenWeek ? 'ч/н ' : 'н/н ';
+                }
+
+                scheduleStr += schedule[i].startTime.substring(0, schedule[i].startTime.lastIndexOf(":")) + ' - ' + schedule[i].endTime.substring(0, schedule[i].endTime.lastIndexOf(":"));
+
+                if (i + 1 < schedule.length) {
+                    scheduleStr += '; ';
+                }
+            }
+
+            return scheduleStr;
+        },
+
+        getWeekDayName(dayOfWeek) {
+            switch (dayOfWeek) {
+                case 1:
+                    return 'ПН';
+                case 2:
+                    return 'ВТ';
+                case 3:
+                    return 'СР';
+                case 4:
+                    return 'ЧТ';
+                case 5:
+                    return 'ПТ';
+                case 6:
+                    return 'СБ';
+                case 7:
+                    return 'ВС';
+            }
         },
 
         parseDate(date) {

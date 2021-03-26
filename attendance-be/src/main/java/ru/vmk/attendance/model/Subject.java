@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,5 +21,8 @@ public class Subject {
     private Group group;
     private int semester;
     private int course;
-    //TODO Расписание - List<Schedule> schedule Schedule - время, четность недели, день недели
+    @OneToMany(targetEntity = Schedule.class,
+            mappedBy = "subject",
+            fetch = FetchType.LAZY)
+    private List<Schedule> schedule;
 }
