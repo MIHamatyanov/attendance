@@ -8,6 +8,7 @@ import Login from './views/Login';
 import StudentProfile from './views/StudentProfile';
 import Logout from './views/Logout';
 import SubjectVisitList from "./views/SubjectVisitList";
+import TeacherSubjectVisitList from "./views/TeacherSubjectVisitList";
 
 Vue.use(Router);
 
@@ -65,7 +66,7 @@ export default new Router({
             name: 'StudentProfile',
             component: StudentProfile,
             beforeEnter: (to, from, next) => {
-                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD, constants.ROLE.STUDENT])
+                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD, constants.ROLE.STUDENT, constants.ROLE.TEACHER])
             }
         },
 
@@ -76,6 +77,16 @@ export default new Router({
             component: SubjectVisitList,
             beforeEnter: (to, from, next) => {
                 checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD, constants.ROLE.STUDENT])
+            }
+        },
+
+        {
+            path: '/teacher-subject-visit-list/:id',
+            name: 'TeacherSubjectVisitList',
+            props: true,
+            component: TeacherSubjectVisitList,
+            beforeEnter: (to, from, next) => {
+                checkAuthAndRoles(to, from, next, [constants.ROLE.TEACHER])
             }
         },
 

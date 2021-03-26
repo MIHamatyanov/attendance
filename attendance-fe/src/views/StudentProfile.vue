@@ -49,7 +49,7 @@
                                 <span class="ml-3">{{ user.institute }}</span>
                             </v-col>
                         </v-row>
-                        <v-row no-gutters class="mt-7">
+                        <v-row no-gutters class="mt-7" v-if="user.role !== 'ROLE_TEACHER'">
                             <v-col cols="12">
                                 <span>№ группы:</span>
                                 <span class="ml-3">{{ user.group.name }}</span>

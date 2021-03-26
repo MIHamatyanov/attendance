@@ -23,6 +23,22 @@ export default {
             }
         },
 
+        async getTeacherSubjects() {
+            try {
+                let subjects = await rest.doGet(`${path}/teacher`);
+
+                return {
+                    success: true,
+                    data: subjects
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error.response.data
+                };
+            }
+        },
+
         async getSubjectVisitList(context, id) {
             try {
                 let visitList = await rest.doGet(`${path}/${id}/visit-list`);
@@ -42,6 +58,38 @@ export default {
         async saveSubjectVisitList(context, data) {
             try {
                 let visitList = await rest.doPost(`${path}/${data.subject.id}/visit-list`, data);
+
+                return {
+                    success: true,
+                    data: visitList
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error.response.data
+                };
+            }
+        },
+
+        async saveTeacherSubjectVisitList(context, data) {
+            try {
+                let visitList = await rest.doPost(`${path}/teacher/${data.subject.id}/visit-list`, data);
+
+                return {
+                    success: true,
+                    data: visitList
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error.response.data
+                };
+            }
+        },
+
+        async getTeacherSubjectVisitList(context, id) {
+            try {
+                let visitList = await rest.doGet(`${path}/teacher/${id}/visit-list`);
 
                 return {
                     success: true,

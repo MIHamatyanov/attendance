@@ -31,6 +31,7 @@ public class User {
     private String institute;
     @OneToOne
     private Group group;
+    private Integer subGroup;
 
     private String photoUrl;
 }
