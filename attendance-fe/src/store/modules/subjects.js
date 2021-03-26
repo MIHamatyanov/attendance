@@ -38,6 +38,22 @@ export default {
                 };
             }
         },
+
+        async saveSubjectVisitList(context, data) {
+            try {
+                let visitList = await rest.doPost(`${path}/${data.subject.id}/visit-list`, data);
+
+                return {
+                    success: true,
+                    data: visitList
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error.response.data
+                };
+            }
+        },
     },
 
     mutations: {},

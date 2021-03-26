@@ -19,6 +19,6 @@ public class VisitList {
     private LocalDate date;
     @ManyToOne
     private User student;
-    private byte mark;
+    private String mark;
     private boolean presence;
 }

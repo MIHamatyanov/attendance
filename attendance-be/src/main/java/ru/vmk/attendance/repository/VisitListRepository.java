@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface VisitListRepository extends JpaRepository<VisitList, Long> {
-    List<VisitList> getAllBySubjectId(Long subjectId);
+    List<VisitList> getAllBySubjectIdOrderByDate(Long subjectId);
+
+    VisitList getById(Long id);
 }

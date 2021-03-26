@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.vmk.attendance.config.security.UserDetailsImpl;
+import ru.vmk.attendance.dto.SubjectVisitListDto;
 import ru.vmk.attendance.service.SubjectService;
 
 @RestController
@@ -21,5 +22,11 @@ public class SubjectController {
     @GetMapping("/{id}/visit-list")
     public ResponseEntity<?> getSubjectVisitList(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl auth) {
         return ResponseEntity.ok(subjectService.getSubjectVisitList(id, auth));
+    }
+
+    @PostMapping("/{id}/visit-list")
+    public ResponseEntity<?> saveSubjectVisitList(@PathVariable Long id, @RequestBody SubjectVisitListDto dto, @AuthenticationPrincipal UserDetailsImpl auth) {
+        subjectService.saveSubjectVisitList(id, dto, auth);
+        return ResponseEntity.ok("");
     }
 }

@@ -11,4 +11,7 @@ import java.util.List;
 public class UserVisitListDto {
     private UserDto user;
     private List<VisitList> visitList;
+    private String mark;
+    private long notVisitCount;
+    private long marksSum;
 }
