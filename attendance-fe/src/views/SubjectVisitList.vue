@@ -16,7 +16,7 @@
                                     <col span="1" style="width: 15%;">
                                     <col v-if="userVisitList[0].user && userVisitList[0].visitList.length > 0"
                                          :span="userVisitList[0].visitList.length" style="width: 5%;">
-                                    <col span="1" style="width: 5%;">
+                                    <col v-if="user.role !== 'ROLE_STUDENT'" span="1" style="width: 5%;">
                                     <col span="1" style="width: 70%;">
                                     <col span="2" style="width: 5%;">
                                 </colgroup>
@@ -27,9 +27,9 @@
                                     </th>
                                     <th class="text-left" v-for="(visitList, index) in userVisitList[0].visitList"
                                         :key="index">
-                                        <span class="table_header">{{parseDate(visitList.date)}}</span>
+                                        <span class="table_header">{{ parseDate(visitList.date) }}</span>
                                     </th>
-                                    <th class="text-left">
+                                    <th v-if="user.role !== 'ROLE_STUDENT'" class="text-left">
                                         <v-dialog
                                             ref="dialog"
                                             v-model="datepickerMenu"
@@ -93,10 +93,13 @@
                                         }}
                                     </td>
                                     <td v-for="(visitList, index) in userVisitList[index].visitList" :key="index">
-                                        <v-text-field v-model="visitList.mark">
-                                        </v-text-field>
+                                        <v-text-field
+                                            v-if="user.role !== 'ROLE_STUDENT'"
+                                            v-model="visitList.mark"
+                                        ></v-text-field>
+                                        <span v-else>{{ visitList.mark }}</span>
                                     </td>
-                                    <td>
+                                    <td v-if="user.role !== 'ROLE_STUDENT'">
                                         <v-text-field v-model="visitList.mark">
                                         </v-text-field>
                                     </td>
@@ -138,6 +141,7 @@ export default {
             datepickerMenu: false,
             date: '',
             formattedDate: '',
+            user: {}
         }
     },
 
@@ -148,6 +152,7 @@ export default {
     },
 
     created() {
+        this.user = this.$store.getters.currentUser;
         this.getSubjectVisitList();
     },
 
@@ -170,7 +175,6 @@ export default {
         },
 
         parseDate(date) {
-            this.datepickerMenu = false;
             let d = new Date(date);
             let day = d.getDate();
             if ((day + '').length === 1) {

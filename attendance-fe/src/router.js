@@ -5,7 +5,7 @@ import constants from './constants';
 
 // eslint-disable-next-line no-unused-vars
 import Login from './views/Login';
-import Profile from './views/Profile';
+import StudentProfile from './views/StudentProfile';
 import Logout from './views/Logout';
 import SubjectVisitList from "./views/SubjectVisitList";
 
@@ -39,7 +39,7 @@ const checkAuthAndRoles = async (to, from, next, roles) => {
 const checkNoAuth = async (next) => {
     let auth = await store.dispatch('isAuthenticated');
     if (auth) {
-        next({name: 'Profile'});
+        next({name: 'StudentProfile'});
         return;
     }
     next();
@@ -62,10 +62,10 @@ export default new Router({
 
         {
             path: '/profile',
-            name: 'Profile',
-            component: Profile,
+            name: 'StudentProfile',
+            component: StudentProfile,
             beforeEnter: (to, from, next) => {
-                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD])
+                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD, constants.ROLE.STUDENT])
             }
         },
 
@@ -75,7 +75,7 @@ export default new Router({
             props: true,
             component: SubjectVisitList,
             beforeEnter: (to, from, next) => {
-                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD])
+                checkAuthAndRoles(to, from, next, [constants.ROLE.GROUP_HEAD, constants.ROLE.STUDENT])
             }
         },
 

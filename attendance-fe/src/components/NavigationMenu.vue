@@ -14,7 +14,7 @@
                     </a>
                 </div>
                 <v-spacer></v-spacer>
-                <router-link :to="{name: 'Profile', query: {course: $route.query.course}}">
+                <router-link :to="{name: 'StudentProfile', query: {course: $route.query.course}}">
                     <v-avatar
                         size="45"
                     >
@@ -37,7 +37,7 @@
             :width="$vuetify.breakpoint.mdAndUp ? '350px' : '350px'"
             height="100vh"
         >
-            <div v-if="subjects.firstSemester && subjects.firstSemester.length !== 0" class="ml-5">
+            <div v-if="subjects.firstSemester && subjects.firstSemester.length !== 0" class="ml-5 mt-9">
                 <span class="subject_link">1 семестр</span>
                 <ul>
                     <li class="subject_link mt-2" v-for="(subject, index) in subjects.firstSemester" :key="index">
@@ -46,7 +46,7 @@
                 </ul>
             </div>
             <div v-if="subjects.secondSemester && subjects.secondSemester.length !== 0" class="ml-5"
-                 :class="subjects.firstSemester && subjects.firstSemester.length !== 0 ? 'mt-10' : ''">
+                 :class="subjects.firstSemester && subjects.firstSemester.length !== 0 ? 'mt-10' : 'mt-9'">
                 <span class="subject_link">2 семестр</span>
                 <ul>
                     <li class="subject_link mt-2" v-for="(subject, index) in subjects.secondSemester" :key="index">
@@ -122,6 +122,7 @@ export default {
 <style scoped>
 .main_left_pane {
     min-height: 100vh;
+    z-index: 1000;
 }
 
 @media screen and (min-width: 960px) {

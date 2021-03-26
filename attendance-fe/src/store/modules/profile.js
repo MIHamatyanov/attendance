@@ -145,7 +145,7 @@ export default {
                 sessionStorage.removeItem(constants.SESSION_STORAGE_REDIRECT);
                 router.push(redirectTo);
             } else {
-                router.push({name: 'Profile'});
+                router.push({name: 'StudentProfile'});
             }
         }
     },

@@ -120,7 +120,7 @@
 import NavigationMenu from "../components/NavigationMenu";
 
 export default {
-    name: "Profile",
+    name: "StudentProfile",
     components: {NavigationMenu},
     data() {
         return {
