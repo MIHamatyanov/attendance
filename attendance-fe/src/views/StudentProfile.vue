@@ -1,12 +1,12 @@
 <template>
     <div class="main_container">
         <v-row no-gutters style="margin-top: 100px;">
-            <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="1" md="3" lg="2">
+            <v-col md="3" lg="2">
                 <NavigationMenu/>
             </v-col>
-            <v-col cols="10" class="pl-12 mt-9">
+            <v-col cols="12" md="9" lg="10" class="mt-9" :class="{'pl-12' : $vuetify.breakpoint.smAndUp}">
                 <v-row no-gutters>
-                    <v-col cols="2">
+                    <v-col cols="12" sm="4" lg="2" :class="{'d-flex justify-center' : $vuetify.breakpoint.xsOnly}">
                         <a>
                             <v-img
                                 :src="photoSrc === '' ? '../assets/addPhoto.png' : photoSrc"
@@ -17,11 +17,10 @@
                             ></v-img>
                         </a>
                     </v-col>
-                    <v-col cols="5" class="ml-9">
-                        <div class="block_title_wrapper block_main">
+                    <v-col cols="10" sm="6" lg="5" class="ml-9" :class="{'mt-5' : $vuetify.breakpoint.xsOnly}">
+                        <div class="block_title_wrapper"
+                             >
                             <span class="block_title">Общие сведения</span>
-                            <v-spacer></v-spacer>
-                            <!--                            <a href="">Сменить пароль</a>-->
                         </div>
                         <v-row no-gutters class="mt-7">
                             <v-col cols="12">
@@ -57,60 +56,63 @@
                         </v-row>
                     </v-col>
                 </v-row>
-                <v-row no-gutters class="mt-9">
-                    <v-row no-gutters>
-                        <v-col cols="7">
-                            <div class="block_title_wrapper block_password">
-                                <span class="block_title">Смена пароля</span>
-                            </div>
+                <div :class="{'ml-9' : $vuetify.breakpoint.xsOnly}">
+                    <v-row no-gutters class="mt-7">
+                        <v-row no-gutters>
+                            <v-col cols="11" sm="10" lg="7">
+                                <div class="block_title_wrapper" :class="{'mr-n9' : $vuetify.breakpoint.smAndUp}">
+                                    <span class="block_title">Смена пароля</span>
+                                </div>
+                            </v-col>
+                        </v-row>
+                    </v-row>
+                    <v-row no-gutters class="mt-5">
+                        <v-col cols="10" sm="4" lg="2">
+                            <div class="field-label">Старый пароль</div>
+                            <v-text-field
+                                class="mt-1 password_field"
+                                :class="$vuetify.breakpoint.smAndDown ? 'text-field' : ''"
+                                :flat="true"
+                                type="password"
+                                v-model="oldPassword"
+                                outlined
+                            ></v-text-field>
                         </v-col>
                     </v-row>
-                </v-row>
-                <v-row no-gutters class="mt-5">
-                    <v-col cols="2">
-                        <div class="field-label">Старый пароль</div>
-                        <v-text-field
-                            class="mt-1 password_field"
-                            :class="$vuetify.breakpoint.smAndDown ? 'text-field' : ''"
-                            :flat="true"
-                            type="password"
-                            v-model="oldPassword"
-                            outlined
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row no-gutters class="mt-n3">
-                    <v-col cols="2">
-                        <div class="field-label">Новый пароль</div>
-                        <v-text-field
-                            class="mt-1"
-                            :class="$vuetify.breakpoint.smAndDown ? 'text-field' : ''"
-                            :flat="true"
-                            v-model="newPassword"
-                            type="password"
-                            outlined
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row no-gutters class="mt-n3">
-                    <v-col cols="2">
-                        <div class="field-label">Повтор пароля</div>
-                        <v-text-field
-                            class="mt-1"
-                            :class="$vuetify.breakpoint.smAndDown ? 'text-field' : ''"
-                            :flat="true"
-                            v-model="repeatPassword"
-                            type="password"
-                            outlined
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-
-                <v-row no-gutters>
-                    <v-col cols="2">
-                        <v-btn :disabled="passwordDisabled" class="save_btn" color="#003b73" @click="changePassword">Сохранить</v-btn>
-                    </v-col>
-                </v-row>
+                    <v-row no-gutters class="mt-n3">
+                        <v-col cols="10" sm="4" lg="2">
+                            <div class="field-label">Новый пароль</div>
+                            <v-text-field
+                                class="mt-1"
+                                :class="$vuetify.breakpoint.smAndDown ? 'text-field' : ''"
+                                :flat="true"
+                                v-model="newPassword"
+                                type="password"
+                                outlined
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mt-n3">
+                        <v-col cols="10" sm="4" lg="2">
+                            <div class="field-label">Повтор пароля</div>
+                            <v-text-field
+                                class="mt-1"
+                                :class="$vuetify.breakpoint.smAndDown ? 'text-field' : ''"
+                                :flat="true"
+                                v-model="repeatPassword"
+                                type="password"
+                                outlined
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row no-gutters class="mb-10">
+                        <v-col cols="10" sm="4" lg="2">
+                            <v-btn :disabled="passwordDisabled" class="save_btn" color="#003b73" @click="changePassword">
+                                Сохранить
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </div>
             </v-col>
         </v-row>
     </div>
@@ -213,12 +215,20 @@ export default {
     border-bottom: 1px solid #000;
 }
 
-.block_main {
+.block_main_lg {
     width: 700px;
 }
 
-.block_password {
+.block_main_md {
+    width: 500px;
+}
+
+.block_password_lg {
     width: 1000px;
+}
+
+.block_password_md {
+    width: 700px;
 }
 
 .save_btn {

@@ -1,10 +1,10 @@
 <template>
     <div class="main_container">
         <v-row no-gutters style="margin-top: 100px;">
-            <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="1" md="3" lg="2">
+            <v-col md="3" lg="2">
                 <NavigationMenu/>
             </v-col>
-            <v-col cols="10" class="px-12 mt-9">
+            <v-col cols="12" md="9" lg="10" class="px-5 mt-9" :class="{'pl-12' : $vuetify.breakpoint.smAndUp}">
                 <v-row no-gutters>
                     <span class="page_title">{{ getSubjectTitle() }}</span>
                     <span class="page_title ml-2">{{ getScheduleStr() }}</span>
@@ -14,16 +14,16 @@
                         <v-simple-table class="mt-5">
                             <template v-slot:default>
                                 <colgroup>
-                                    <col span="1" style="width: 15%;">
+                                    <col span="1">
                                     <col v-if="userVisitList[0].user && userVisitList[0].visitList.length > 0"
-                                         :span="userVisitList[0].visitList.length" style="width: 5%;">
-                                    <col v-if="user.role !== 'ROLE_STUDENT'" span="1" style="width: 5%;">
-                                    <col span="1" style="width: 70%;">
-                                    <col span="2" style="width: 5%;">
+                                         :span="userVisitList[0].visitList.length" style="width: 20px;">
+                                    <col v-if="user.role !== 'ROLE_STUDENT'" span="1" style="width: 20px;">
+                                    <col span="1" style="width: 1000px;">
+                                    <col span="2" style="width: 20px;">
                                 </colgroup>
                                 <thead>
                                 <tr>
-                                    <th class="text-center">
+                                    <th class="text-center" style="min-width: 250px;">
                                         <span class="table_header">Фамилия И.О.</span>
                                     </th>
                                     <th class="text-center" v-for="(visitList, index) in userVisitList[0].visitList"
@@ -40,11 +40,17 @@
                                         >
                                             <template v-slot:activator="{ on, attrs }">
                                                 <v-text-field
+                                                    v-show="formattedDate === ''"
                                                     v-model="formattedDate"
+                                                    style="width: 30px;"
                                                     readonly
                                                     v-bind="attrs"
                                                     v-on="on"
                                                 ></v-text-field>
+                                                <span class="table_header text-decoration-underline" v-show="formattedDate !== ''" v-bind="attrs"
+                                                      v-on="on">
+                                                    {{formattedDate}}
+                                                </span>
                                             </template>
                                             <v-date-picker
                                                 v-model="date"
@@ -119,7 +125,7 @@
                         </v-simple-table>
                     </v-col>
                 </v-row>
-                <v-row no-gutters class="mt-10">
+                <v-row v-if="user.role !== 'ROLE_STUDENT'" no-gutters class="mt-10">
                     <v-col cols="12" class="d-flex justify-end">
                         <v-btn color="#003b73" dark @click="save">Сохранить</v-btn>
                     </v-col>
@@ -251,6 +257,10 @@ export default {
 .page_title {
     font-weight: bold;
     font-size: 20px;
+}
+
+table {
+    border-collapse: collapse !important;
 }
 
 th, td {

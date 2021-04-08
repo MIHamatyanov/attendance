@@ -69,6 +69,12 @@ public class SubjectService {
         SubjectVisitListDto dto = new SubjectVisitListDto();
         dto.setSubject(subject);
 
+        fillVisitList(visitList, groupList, dto);
+
+        return dto;
+    }
+
+    private void fillVisitList(List<VisitList> visitList, List<User> groupList, SubjectVisitListDto dto) {
         List<UserVisitListDto> userVisitListDtos = new ArrayList<>();
         groupList.forEach(user -> {
             List<VisitList> userVisitList = visitList.stream().filter(vl -> vl.getStudent().getId().equals(user.getId())).collect(Collectors.toList());
@@ -89,8 +95,6 @@ public class SubjectService {
         });
 
         dto.setUserVisitList(userVisitListDtos);
-
-        return dto;
     }
 
     public TeacherSubjectVisitListDto getTeacherSubjectVisitList(Long subjectId, UserDetailsImpl auth) {
@@ -107,46 +111,10 @@ public class SubjectService {
         teacherSubjectVisitListDto.setSubject(subject);
 
         SubjectVisitListDto firstSubGroupDto = new SubjectVisitListDto();
-        List<UserVisitListDto> firstSubGroupUserVisitListDtos = new ArrayList<>();
-        firstSubGroup.forEach(user -> {
-            List<VisitList> userVisitList = visitList.stream().filter(vl -> vl.getStudent().getId().equals(user.getId())).collect(Collectors.toList());
-            UserVisitListDto userVisitListDto = new UserVisitListDto();
-            userVisitListDto.setUser(modelMapper.map(user, UserDto.class));
-            userVisitListDto.setVisitList(userVisitList);
-            userVisitListDto.setNotVisitCount(userVisitList.stream().filter(vl -> !vl.isPresence()).count());
-            userVisitListDto.setMarksSum(userVisitList.stream().flatMapToInt(vl -> {
-                int mark;
-                try {
-                    mark = Integer.parseInt(vl.getMark());
-                } catch (Exception e) {
-                    mark = 0;
-                }
-                return IntStream.of(mark);
-            }).sum());
-            firstSubGroupUserVisitListDtos.add(userVisitListDto);
-        });
-        firstSubGroupDto.setUserVisitList(firstSubGroupUserVisitListDtos);
+        fillVisitList(visitList, firstSubGroup, firstSubGroupDto);
 
         SubjectVisitListDto secondSubGroupDto = new SubjectVisitListDto();
-        List<UserVisitListDto> secondSubGroupUserVisitListDtos = new ArrayList<>();
-        secondSubGroup.forEach(user -> {
-            List<VisitList> userVisitList = visitList.stream().filter(vl -> vl.getStudent().getId().equals(user.getId())).collect(Collectors.toList());
-            UserVisitListDto userVisitListDto = new UserVisitListDto();
-            userVisitListDto.setUser(modelMapper.map(user, UserDto.class));
-            userVisitListDto.setVisitList(userVisitList);
-            userVisitListDto.setNotVisitCount(userVisitList.stream().filter(vl -> !vl.isPresence()).count());
-            userVisitListDto.setMarksSum(userVisitList.stream().flatMapToInt(vl -> {
-                int mark;
-                try {
-                    mark = Integer.parseInt(vl.getMark());
-                } catch (Exception e) {
-                    mark = 0;
-                }
-                return IntStream.of(mark);
-            }).sum());
-            secondSubGroupUserVisitListDtos.add(userVisitListDto);
-        });
-        secondSubGroupDto.setUserVisitList(secondSubGroupUserVisitListDtos);
+        fillVisitList(visitList, secondSubGroup, secondSubGroupDto);
 
         List<SubjectVisitListDto> subGroups = new ArrayList<>();
         subGroups.add(firstSubGroupDto);
@@ -161,6 +129,20 @@ public class SubjectService {
         User authUser = userService.getUser(auth.getId());
         //TODO проверка прав
 
+        saveVisitList(subjectId, dto, false);
+    }
+
+    @Transactional
+    public void saveTeacherSubjectVisitList(Long subjectId, TeacherSubjectVisitListDto teacherDto, UserDetailsImpl auth) {
+        User authUser = userService.getUser(auth.getId());
+        //TODO проверка прав
+
+        for (SubjectVisitListDto subGroup : teacherDto.getSubGroups()) {
+            saveVisitList(subjectId, subGroup, true);
+        }
+    }
+
+    private void saveVisitList(Long subjectId, SubjectVisitListDto dto, boolean isTeacher) {
         LocalDate date = dto.getDate();
         Subject subject = subjectRepository.getById(subjectId);
         List<UserVisitListDto> userVisitList = dto.getUserVisitList();
@@ -169,7 +151,7 @@ public class SubjectService {
                 VisitList dbVisitList = visitListRepository.getById(visitList.getId());
                 String mark = visitList.getMark();
                 dbVisitList.setPresence(mark == null || (!mark.equalsIgnoreCase("н") && !mark.equals("-")));
-                dbVisitList.setMark(dbVisitList.isPresence() ? visitList.getMark() : "н");
+                dbVisitList.setMark(dbVisitList.isPresence() ? isTeacher ? visitList.getMark() : dbVisitList.getMark() : "н");
             }
 
             if (date != null) {
@@ -179,38 +161,8 @@ public class SubjectService {
                 visitList.setDate(date);
                 String mark = userVisitListDto.getMark();
                 visitList.setPresence(mark == null || (!mark.equalsIgnoreCase("н") && !mark.equals("-")));
-                visitList.setMark(visitList.isPresence() ? mark : "н");
+                visitList.setMark(visitList.isPresence() ? isTeacher ? mark : "" : "н");
                 visitListRepository.save(visitList);
-            }
-        }
-    }
-
-    public void saveTeacherSubjectVisitList(Long subjectId, TeacherSubjectVisitListDto teacherDto, UserDetailsImpl auth) {
-        User authUser = userService.getUser(auth.getId());
-        //TODO проверка прав
-
-        for (SubjectVisitListDto subGroup : teacherDto.getSubGroups()) {
-            LocalDate date = subGroup.getDate();
-            Subject subject = subjectRepository.getById(subjectId);
-            List<UserVisitListDto> userVisitList = subGroup.getUserVisitList();
-            for (UserVisitListDto userVisitListDto : userVisitList) {
-                for (VisitList visitList : userVisitListDto.getVisitList()) {
-                    VisitList dbVisitList = visitListRepository.getById(visitList.getId());
-                    String mark = visitList.getMark();
-                    dbVisitList.setPresence(mark == null || (!mark.equalsIgnoreCase("н") && !mark.equals("-")));
-                    dbVisitList.setMark(dbVisitList.isPresence() ? visitList.getMark() : "н");
-                }
-
-                if (date != null) {
-                    VisitList visitList = new VisitList();
-                    visitList.setSubject(subject);
-                    visitList.setStudent(userService.getUser(userVisitListDto.getUser().getId()));
-                    visitList.setDate(date);
-                    String mark = userVisitListDto.getMark();
-                    visitList.setPresence(mark == null || (!mark.equalsIgnoreCase("н") && !mark.equals("-")));
-                    visitList.setMark(visitList.isPresence() ? mark : "н");
-                    visitListRepository.save(visitList);
-                }
             }
         }
     }
