@@ -9,7 +9,7 @@
             <v-row no-gutters :class="$vuetify.breakpoint.smAndDown ? '' : 'px-10'">
                 <v-icon v-if="$vuetify.breakpoint.smAndDown" color="white" size="30" class="mr-5" @click="drawer = true">mdi-menu</v-icon>
                 <LogoIcon/>
-                <div v-if="user.role !== 'ROLE_TEACHER'" :class="$vuetify.breakpoint.smAndDown ? 'ml-5 mt-2' : 'header_link_wrapper mt-3'">
+                <div v-if="user.role !== 'ROLE_TEACHER' && user.role !== 'ROLE_DEAN'" :class="$vuetify.breakpoint.smAndDown ? 'ml-5 mt-2' : 'header_link_wrapper mt-3'">
                     <div v-if="!$vuetify.breakpoint.xsOnly">
                         <a v-for="(course, index) in courses" class="mr-5 header_link" :key="index"
                            @click="loadSubjects(course)">
@@ -45,7 +45,7 @@
                     </v-menu>
                 </div>
                 <v-spacer></v-spacer>
-                <router-link :to="{name: 'StudentProfile', query: {course: $route.query.course}}">
+                <router-link v-if="user.role !== 'ROLE_DEAN'" :to="{name: 'StudentProfile', query: {course: $route.query.course}}">
                     <v-avatar
                         :size="$vuetify.breakpoint.smAndDown ? 40 : 45"
                     >
@@ -141,7 +141,7 @@ export default {
     async created() {
         await this.$store.dispatch('loadCurrentUserData');
         this.user = Object.assign({}, this.$store.getters.currentUser);
-        if (this.user.role !== 'ROLE_TEACHER') {
+        if (this.user.role !== 'ROLE_TEACHER' && this.user.role !== 'ROLE_DEAN') {
             for (let i = 0; i < this.user.group.course; i++) {
                 this.courses.push({
                     number: i + 1,
@@ -159,7 +159,7 @@ export default {
     },
     methods: {
         async loadSubjects(course) {
-            if (this.user.role !== 'ROLE_TEACHER') {
+            if (this.user.role !== 'ROLE_TEACHER' && this.user.role !== 'ROLE_DEAN') {
                 this.$route.params.course = course.number;
                 this.selectedCourse = course.number;
                 this.$router.replace({name: this.$route.name, query: {course: course.number}}).catch(() => {
@@ -171,15 +171,17 @@ export default {
                 this.courses[course.number - 1].active = true;
             }
 
-            let response;
-            if (this.user.role !== 'ROLE_TEACHER') {
-                response = await this.$store.dispatch('getSubjects', course.number);
-            } else {
-                response = await this.$store.dispatch('getTeacherSubjects');
-            }
+            if (this.user.role !== 'ROLE_DEAN') {
+                let response;
+                if (this.user.role !== 'ROLE_TEACHER') {
+                    response = await this.$store.dispatch('getSubjects', course.number);
+                } else {
+                    response = await this.$store.dispatch('getTeacherSubjects');
+                }
 
-            if (response.success) {
-                this.subjects = response.data;
+                if (response.success) {
+                    this.subjects = response.data;
+                }
             }
         },
 

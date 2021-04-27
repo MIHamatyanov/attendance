@@ -1,6 +1,7 @@
 package ru.vmk.attendance.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +10,8 @@ import ru.vmk.attendance.config.security.UserDetailsImpl;
 import ru.vmk.attendance.dto.SubjectVisitListDto;
 import ru.vmk.attendance.dto.TeacherSubjectVisitListDto;
 import ru.vmk.attendance.service.SubjectService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/subject")
@@ -48,5 +51,10 @@ public class SubjectController {
     public ResponseEntity<?> saveTeacherSubjectVisitList(@PathVariable Long id, @RequestBody TeacherSubjectVisitListDto dto, @AuthenticationPrincipal UserDetailsImpl auth) {
         subjectService.saveTeacherSubjectVisitList(id, dto, auth);
         return ResponseEntity.ok("");
+    }
+
+    @GetMapping("/generate")
+    public byte[] generateReport(@RequestParam Integer course, @RequestParam List<Long> groupIds) throws Exception {
+        return subjectService.generateReport(course, groupIds);
     }
 }

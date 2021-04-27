@@ -1,9 +1,14 @@
 package ru.vmk.attendance.service;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import ru.vmk.attendance.config.security.UserDetailsImpl;
 import ru.vmk.attendance.dto.*;
 import ru.vmk.attendance.model.Schedule;
@@ -15,8 +20,12 @@ import ru.vmk.attendance.repository.SubjectRepository;
 import ru.vmk.attendance.repository.VisitListRepository;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,6 +33,9 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class SubjectService {
+    @Value("${custom.itext.font.filePath}")
+    private String fontPath;
+
     private final SubjectRepository subjectRepository;
     private final VisitListRepository visitListRepository;
     private final ScheduleRepository scheduleRepository;
@@ -164,6 +176,95 @@ public class SubjectService {
                 visitList.setMark(visitList.isPresence() ? isTeacher ? mark : "" : "н");
                 visitListRepository.save(visitList);
             }
+        }
+    }
+
+    public byte[] generateReport(Integer course, List<Long> groupIds) throws Exception {
+        ByteArrayOutputStream resultBaos = new ByteArrayOutputStream();
+        List<Subject> subjects = subjectRepository.findAllByCourseAndGroupIdIn(course, groupIds);
+        subjects.sort(Comparator.comparingInt(Subject::getSemester));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
+        Document document = new Document();
+        PdfWriter.getInstance(document, resultBaos);
+
+        document.open();
+
+        BaseFont bf = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font font = new Font(bf, 8, Font.NORMAL);
+
+        for (Subject subject : subjects) {
+            Paragraph tableHeader = new Paragraph(
+                    subject.getGroup().getName()
+                            + " " + subject.getName()
+                            + " " + subject.getCourse() + " курс,"
+                            + " " + subject.getSemester() + " семестр.",
+                    font);
+            tableHeader.setSpacingAfter(10);
+
+            document.add(tableHeader);
+            List<VisitList> visitList = visitListRepository.getAllBySubjectIdOrderByDate(subject.getId());
+            List<User> groupList = userService.getGroupList(subject.getGroup().getId());
+
+            SubjectVisitListDto dto = new SubjectVisitListDto();
+            dto.setSubject(subject);
+
+            fillVisitList(visitList, groupList, dto);
+
+            List<String> headers = new ArrayList<>();
+            headers.add("ФИО");
+
+            if (!dto.getUserVisitList().isEmpty()) {
+                for (VisitList list : dto.getUserVisitList().get(0).getVisitList()) {
+                    headers.add(list.getDate().format(formatter));
+                }
+            }
+            headers.add("Н");
+            headers.add("Баллы");
+
+            PdfPTable table = new PdfPTable(headers.size());
+            table.setSpacingAfter(20);
+            int[] columnWidth = new int[headers.size()];
+            columnWidth[0] = 15;
+            for (int i = 1; i < columnWidth.length; i++) {
+                columnWidth[i] = 5;
+            }
+            table.setWidths(columnWidth);
+            addTableHeader(table, headers, font);
+
+            for (UserVisitListDto userVisitListDto : dto.getUserVisitList()) {
+                List<String> tableCellsData = new ArrayList<>();
+                tableCellsData.add(userVisitListDto.getUser().getSurname() + userVisitListDto.getUser().getName().charAt(0) + ". " + userVisitListDto.getUser().getPatronymic().charAt(0) + ".");
+
+                for (VisitList list : userVisitListDto.getVisitList()) {
+                    tableCellsData.add(list.getMark());
+                }
+
+                tableCellsData.add(String.valueOf(userVisitListDto.getNotVisitCount()));
+                tableCellsData.add(String.valueOf(userVisitListDto.getMarksSum()));
+
+                addRows(table, tableCellsData, font);
+            }
+
+            document.add(table);
+        }
+        document.close();
+
+        return resultBaos.toByteArray();
+    }
+
+    private static void addTableHeader(PdfPTable table, List<String> headers, Font font) {
+        headers.forEach(columnTitle -> {
+            PdfPCell header = new PdfPCell();
+            header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            header.setPhrase(new Phrase(columnTitle, font));
+            table.addCell(header);
+        });
+    }
+
+    private static void addRows(PdfPTable table, List<String> cellsData, Font font) {
+        for (String cellData : cellsData) {
+            table.addCell(new Phrase(cellData, font));
         }
     }
 }

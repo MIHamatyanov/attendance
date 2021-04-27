@@ -49,12 +49,6 @@ export default {
         );
     },
 
-    getFileToDownload(url) {
-        return restPromise(
-            axios.get(apiUrl + url, { headers : {Authorization: store.getters.token}, responseType: 'blob'})
-        );
-    },
-
     doGet(url) {
         return restPromise(
             axios.get(apiUrl + url, headers())

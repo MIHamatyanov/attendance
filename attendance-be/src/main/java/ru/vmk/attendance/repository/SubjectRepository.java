@@ -14,4 +14,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     Subject getById(Long subjectId);
 
     List<Subject> findAllByTeacherIdOrderByScheduleWeekDayAscScheduleStartTimeAsc(Long authId);
+
+    List<Subject> findAllByCourseAndGroupIdIn(Integer course, List<Long> groupIds);
 }

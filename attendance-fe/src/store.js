@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import profile from './store/modules/profile.js';
-import users from './store/modules/users.js';
 import files from './store/modules/files.js';
 import subjects from './store/modules/subjects.js';
+import groups from './store/modules/groups.js';
 
 import createPersistedState from 'vuex-persistedstate'
 import * as Cookies from 'js-cookie'
@@ -14,9 +14,9 @@ export default new Vuex.Store({
     strict: true,
     modules: {
         profile,
-        users,
         files,
-        subjects
+        subjects,
+        groups
     },
 
     state: {

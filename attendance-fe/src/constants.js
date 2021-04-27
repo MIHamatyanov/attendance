@@ -2,8 +2,6 @@ export default Object.freeze({
     SESSION_STORAGE_TOKEN: 'att_token',
     SESSION_STORAGE_REDIRECT: 'att_redirect',
 
-    ACCEPT_COOKIE_NAME: 'att_accept_cookie',
-
     ROLE: {
         STUDENT: 'ROLE_STUDENT',
         GROUP_HEAD: 'ROLE_GROUP_HEAD',

@@ -9,6 +9,7 @@ import StudentProfile from './views/StudentProfile';
 import Logout from './views/Logout';
 import SubjectVisitList from "./views/SubjectVisitList";
 import TeacherSubjectVisitList from "./views/TeacherSubjectVisitList";
+import DeanMain from "./views/DeanMain";
 
 Vue.use(Router);
 
@@ -87,6 +88,15 @@ export default new Router({
             component: TeacherSubjectVisitList,
             beforeEnter: (to, from, next) => {
                 checkAuthAndRoles(to, from, next, [constants.ROLE.TEACHER])
+            }
+        },
+
+        {
+            path: '/dean-main',
+            name: 'DeanMain',
+            component: DeanMain,
+            beforeEnter: (to, from, next) => {
+                checkAuthAndRoles(to, from, next, [constants.ROLE.DEAN])
             }
         },
 

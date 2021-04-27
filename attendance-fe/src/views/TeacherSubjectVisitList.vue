@@ -151,29 +151,29 @@
                                         <v-dialog
                                             ref="dialog2"
                                             v-model="datepickerMenu2"
-                                            :return-value.sync="secondSubGroupDate"
+                                            :return-value.sync="firstSubGroupDate"
                                             persistent
                                             width="290px"
                                         >
                                             <template v-slot:activator="{ on, attrs }">
                                                 <v-text-field
-                                                    v-show="secondSubGroupFormattedDate === ''"
-                                                    v-model="secondSubGroupFormattedDate"
+                                                    v-show="firstSubGroupFormattedDate === ''"
+                                                    v-model="firstSubGroupFormattedDate"
                                                     style="width: 30px;"
                                                     readonly
                                                     v-bind="attrs"
                                                     v-on="on"
                                                 ></v-text-field>
-                                                <span class="table_header text-decoration-underline" v-show="secondSubGroupFormattedDate !== ''" v-bind="attrs"
+                                                <span class="table_header text-decoration-underline" v-show="firstSubGroupFormattedDate !== ''" v-bind="attrs"
                                                       v-on="on">
-                                                    {{secondSubGroupFormattedDate}}
+                                                    {{firstSubGroupFormattedDate}}
                                                 </span>
                                             </template>
                                             <v-date-picker
-                                                v-model="secondSubGroupDate"
+                                                v-model="firstSubGroupDate"
                                                 first-day-of-week="1"
                                                 locale="ru"
-                                                @input="secondSubGroupFormattedDate = parseDate(secondSubGroupDate)"
+                                                @input="firstSubGroupFormattedDate = parseDate(firstSubGroupDate)"
                                                 scrollable
                                             >
                                                 <v-spacer></v-spacer>
@@ -187,7 +187,7 @@
                                                 <v-btn
                                                     text
                                                     color="primary"
-                                                    @click="$refs.dialog2.save(secondSubGroupDate)"
+                                                    @click="$refs.dialog2.save(firstSubGroupDate)"
                                                 >
                                                     OK
                                                 </v-btn>
@@ -353,10 +353,9 @@ export default {
         },
 
         async save() {
-            let firstSubGroupDate = this.firstSubGroupDate === '' ? null : this.firstSubGroupDate;
-            let secondSubGroupDate = this.secondSubGroupDate === '' ? null : this.secondSubGroupDate;
-            this.subGroups[0].date = firstSubGroupDate;
-            this.subGroups[1].date = secondSubGroupDate;
+            let date = this.firstSubGroupDate === '' ? null : this.firstSubGroupDate;
+            this.subGroups[0].date = date;
+            this.subGroups[1].date = date;
             let data = {
                 subject: this.subject,
                 subGroups: this.subGroups

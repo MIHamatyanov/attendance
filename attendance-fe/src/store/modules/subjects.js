@@ -102,6 +102,23 @@ export default {
                 };
             }
         },
+
+        async generateReport(context, data) {
+            try {
+                let response = await rest.getFile(
+                    `${path}/generate?course=${data.course}&groupIds=${data.groupIds}`);
+
+                return {
+                    success: true,
+                    data: response
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error.response.data
+                };
+            }
+        },
     },
 
     mutations: {},

@@ -30,16 +30,17 @@ export default {
                         password: user.password
                     });
                 commit('AUTH_SUCCESS', tokenData);
+
+                try {
+                    await dispatch('loadCurrentUserData');
+                    dispatch('redirectAfterLogin', tokenData);
+                } catch (error) {
+                    dispatch('logout');
+                    router.push({name: 'Index'});
+                }
             } catch (error) {
                 commit('AUTH_ERROR');
                 return error;
-            }
-            try {
-                await dispatch('loadCurrentUserData');
-                dispatch('redirectAfterLogin');
-            } catch (error) {
-                dispatch('logout');
-                router.push({name: 'Index'});
             }
         },
 
@@ -139,13 +140,17 @@ export default {
             commit('LOGOUT');
         },
 
-        redirectAfterLogin() {
+        redirectAfterLogin(context, tokenData) {
             let redirectTo = sessionStorage.getItem(constants.SESSION_STORAGE_REDIRECT);
             if (redirectTo && redirectTo.length > 0) {
                 sessionStorage.removeItem(constants.SESSION_STORAGE_REDIRECT);
                 router.push(redirectTo);
             } else {
-                router.push({name: 'StudentProfile'});
+                if (tokenData.role === 'ROLE_DEAN') {
+                    router.push({name: 'DeanMain'});
+                } else {
+                    router.push({name: 'StudentProfile'});
+                }
             }
         }
     },
