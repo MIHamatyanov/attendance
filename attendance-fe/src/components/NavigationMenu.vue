@@ -7,9 +7,12 @@
             elevation="0"
         >
             <v-row no-gutters :class="$vuetify.breakpoint.smAndDown ? '' : 'px-10'">
+                <v-col cols="3" sm="4" md="3" lg="2" class="d-flex">
                 <v-icon v-if="$vuetify.breakpoint.smAndDown" color="white" size="30" class="mr-5" @click="drawer = true">mdi-menu</v-icon>
                 <LogoIcon/>
-                <div v-if="user.role !== 'ROLE_TEACHER' && user.role !== 'ROLE_DEAN'" :class="$vuetify.breakpoint.smAndDown ? 'ml-5 mt-2' : 'header_link_wrapper mt-3'">
+                </v-col>
+                <v-col cols="9" sm="8" md="9" lg="10" class="d-flex" :class="$vuetify.breakpoint.smAndUp ? 'pl-5' : 'pl-n10'">
+                <div v-if="user.role !== 'ROLE_TEACHER' && user.role !== 'ROLE_DEAN'" :class="$vuetify.breakpoint.smAndDown ? 'ml-5 mt-2' : 'mt-3'">
                     <div v-if="!$vuetify.breakpoint.xsOnly">
                         <a v-for="(course, index) in courses" class="mr-5 header_link" :key="index"
                            @click="loadSubjects(course)">
@@ -56,6 +59,7 @@
                     <v-icon v-if="$vuetify.breakpoint.smAndDown" color="white">mdi-logout</v-icon>
                     <span v-else>Выход</span>
                 </a>
+                </v-col>
             </v-row>
         </v-app-bar>
 

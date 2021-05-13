@@ -9,7 +9,7 @@
                 <LogoIcon :class="$vuetify.breakpoint.xsOnly ? '' : 'ml-12'"/>
             </v-row>
         </v-app-bar>
-        <v-row style="height: 100vh" align="center" no-gutters>
+        <v-row class="login_card" no-gutters>
             <v-row no-gutters justify="center">
                 <v-col cols="12" sm="8" md="6" lg="4">
                     <v-card class="py-12" elevation="0" :style="$vuetify.breakpoint.xsOnly ? '' : 'border: 1px solid #003b73;'">
@@ -110,5 +110,10 @@ export default {
 .login_label {
     font-size: 18px;
     color: #003b73;
+}
+
+.login_card {
+    margin-top: 200px;
+    margin-bottom:50px;
 }
 </style>
