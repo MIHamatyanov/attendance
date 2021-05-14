@@ -7,7 +7,7 @@
             <v-col cols="12" md="9" lg="10" class="px-5 mt-9" :class="{'pl-12' : $vuetify.breakpoint.smAndUp}">
                 <v-row no-gutters>
                     <span class="page_title">{{ getSubjectTitle() }}</span>
-                    <span class="page_title ml-2">{{ getScheduleStr() }}</span>
+                    <span class="page_title" :class="$vuetify.breakpoint.xsOnly ? '' : 'ml-2'">{{ getScheduleStr() }}</span>
                 </v-row>
                 <v-row no-gutters>
                     <v-col cols="12">
@@ -293,7 +293,7 @@ export default {
         },
 
         getSubjectTitle() {
-            return this.subject.name;
+            return this.subject.name + ' ' + this.subject.group.name;
         },
 
         getScheduleStr() {
