@@ -9,7 +9,7 @@
                     <v-col cols="12" sm="4" lg="2" :class="{'d-flex justify-center' : $vuetify.breakpoint.xsOnly}">
                         <a>
                             <v-img
-                                :src="photoSrc === '' ? '../assets/addPhoto.png' : photoSrc"
+                                :src="photoSrc === '' ? 'addPhoto.png' : photoSrc"
                                 height="295"
                                 width="250"
                                 class="profile_photo"
@@ -75,11 +75,15 @@
                                 :flat="true"
                                 type="password"
                                 v-model="oldPassword"
+                                @input="oldPasswordError = false"
+                                :background-color="oldPasswordError ? 'red lighten-4 ' : ''"
+                                :error="oldPasswordError"
+                                :error-messages="oldPasswordError ? ['Введен неверный пароль!'] : []"
                                 outlined
                             ></v-text-field>
                         </v-col>
                     </v-row>
-                    <v-row no-gutters class="mt-n3">
+                    <v-row no-gutters class="mt-n1">
                         <v-col cols="10" sm="4" lg="2">
                             <div class="field-label">Новый пароль</div>
                             <v-text-field
@@ -92,7 +96,7 @@
                             ></v-text-field>
                         </v-col>
                     </v-row>
-                    <v-row no-gutters class="mt-n3">
+                    <v-row no-gutters class="mt-n1">
                         <v-col cols="10" sm="4" lg="2">
                             <div class="field-label">Повтор пароля</div>
                             <v-text-field
@@ -132,7 +136,8 @@ export default {
             photoSrc: '',
             oldPassword: '',
             newPassword: '',
-            repeatPassword: ''
+            repeatPassword: '',
+            oldPasswordError: false
         }
     },
 
@@ -165,7 +170,7 @@ export default {
                 this.newPassword = '';
                 this.repeatPassword = '';
             } else if (response.data.response.status === 403) {
-                alert('Error');
+                this.oldPasswordError = true;
             }
         },
 

@@ -204,7 +204,7 @@ export default {
                 case 6:
                     return 'Суббота';
                 case 7:
-                    return 'Воскресенье';
+                    return '';
             }
         }
     }
