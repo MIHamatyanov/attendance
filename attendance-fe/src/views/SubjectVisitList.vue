@@ -103,11 +103,16 @@
                                         <v-text-field
                                             v-if="user.role !== 'ROLE_STUDENT'"
                                             v-model="visitList.mark"
+                                            @keypress="onlyAllowedKeyPress"
+                                            @paste="onlyAllowedPaste"
                                         ></v-text-field>
                                         <span v-else>{{ visitList.mark }}</span>
                                     </td>
                                     <td class="text-center" v-if="user.role !== 'ROLE_STUDENT'">
-                                        <v-text-field v-model="visitList.mark">
+                                        <v-text-field v-model="visitList.mark"
+                                                      @keypress="onlyAllowedKeyPress"
+                                                      @paste="onlyAllowedPaste"
+                                        >
                                         </v-text-field>
                                     </td>
                                     <td>
@@ -247,6 +252,20 @@ export default {
                 this.date = '';
                 this.formattedDate = '';
                 this.getSubjectVisitList();
+            }
+        },
+
+        onlyAllowedKeyPress(event) {
+            let keyCode = (event.keyCode ? event.keyCode : event.which);
+            if ((keyCode < 48 || keyCode > 57) && keyCode !== 45 && keyCode !== 1085 && keyCode !== 1053) {
+                event.preventDefault();
+            }
+        },
+
+        onlyAllowedPaste(event) {
+            let inputData = event.clipboardData.getData('text');
+            if (inputData !== 'н' && inputData !== 'Н' && inputData !== '-' && isNaN(Number(inputData))) {
+                event.preventDefault();
             }
         }
     }
