@@ -257,6 +257,15 @@ export default {
 
         onlyAllowedKeyPress(event) {
             let keyCode = (event.keyCode ? event.keyCode : event.which);
+            let prevValue = event.target.value;
+            if (prevValue.length > 0 && (keyCode === 45 || keyCode === 1085 || keyCode === 1053)) {
+                event.preventDefault();
+            }
+
+            if ((prevValue === 'н' || prevValue === 'Н' || prevValue === '-') && (keyCode >= 48 && keyCode <= 57)) {
+                event.preventDefault();
+            }
+
             if ((keyCode < 48 || keyCode > 57) && keyCode !== 45 && keyCode !== 1085 && keyCode !== 1053) {
                 event.preventDefault();
             }
@@ -264,6 +273,13 @@ export default {
 
         onlyAllowedPaste(event) {
             let inputData = event.clipboardData.getData('text');
+            let prevValue = event.target.value;
+            if (prevValue.length > 0 && (inputData === 'н' || inputData === 'Н' || inputData === '-')) {
+                event.preventDefault();
+            }
+            if ((prevValue === 'н' || prevValue === 'Н' || prevValue === '-') && (!isNaN(Number(inputData)))) {
+                event.preventDefault();
+            }
             if (inputData !== 'н' && inputData !== 'Н' && inputData !== '-' && isNaN(Number(inputData))) {
                 event.preventDefault();
             }
